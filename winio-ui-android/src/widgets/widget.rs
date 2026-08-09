@@ -1,6 +1,6 @@
 use std::ops::Deref;
 
-use compio_log::error;
+use compio_log::{error, warn};
 use jni::{
     Env,
     objects::{JObject, JString},
@@ -33,9 +33,11 @@ pub(crate) fn text_view_to_font(
         .get_display_metrics(env)?;
     let typeface = view.get_typeface(env)?;
     let api_level = BuildVersion::SDK_INT(env)?;
+    info!("API Level: {api_level}");
     let family = if api_level >= 34 {
         typeface.get_system_font_family_name(env)?
     } else {
+        warn!("Skipping getSystemFontFamilyName: API Level");
         JString::null()
     };
     let family = if family.is_null() {
